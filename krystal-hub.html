@@ -1,9 +1,9 @@
 <title>Krystal's Babysitting Hub</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
 <style>
-/* Layout: one narrow column, phone first — payday card, log a day, this week, ask the agent, terms (collapsed). */
+/* Layout: phone-first single column. Chat with the agent first, then pay card, quick log, this week, terms. */
 :root {
   --bg: #f3f7f4;
   --surface: #ffffff;
@@ -14,7 +14,7 @@
   --grass-soft: #e1f1e8;
   --sky: #2f6fa8;
   --sky-soft: #e3eef8;
-  --sun: #b7791f;
+  --sun: #a86d14;
   --sun-soft: #fbf0dc;
   --berry: #b0415a;
   --on-accent: #ffffff;
@@ -30,138 +30,161 @@
   --grass: #6cc597; --grass-soft: #1f3a2d; --sky: #7fb5e6; --sky-soft: #1c2f42;
   --sun: #e2b25e; --sun-soft: #3a2f1b; --berry: #e78aa0; --on-accent: #10201a; color-scheme: dark }
 
-* { box-sizing: border-box; }
-body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; }
-.wrap { max-width: 560px; margin: 0 auto; padding-block: 24px 64px;
+*, *::before, *::after { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.45; -webkit-text-size-adjust: 100%; }
+.wrap { width: 100%; max-width: 560px; margin: 0 auto; padding-block: 20px 56px;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
-  display: grid; gap: 24px; }
-h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
-h1 { font-size: 30px; font-weight: 800; }
-h2 { font-size: 20px; font-weight: 800; }
+  display: flex; flex-direction: column; gap: 20px; }
+.wrap > * { min-width: 0; }
+h1, h2 { font-family: var(--display); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+h1 { font-size: 26px; font-weight: 800; line-height: 1.15; }
+h2 { font-size: 19px; font-weight: 800; }
 p { margin: 0; }
 .muted { color: var(--muted); }
 .small { font-size: 14px; }
 .eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
-header { display: grid; gap: 4px; }
+header { display: flex; flex-direction: column; gap: 2px; }
 
-section { display: grid; gap: 10px; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.card { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.stack { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 
-/* Form: date full width, time in / time out side by side. */
-.form-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-.form-grid .full { grid-column: 1 / -1; }
-.field { display: grid; gap: 4px; min-width: 0; }
-label { font-size: 14px; font-weight: 700; color: var(--muted); }
-input, select, textarea {
-  font: inherit; font-size: 16px; color: var(--ink); background: var(--bg);
-  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
-  width: 100%; min-width: 0; max-width: 100%; min-height: 46px; display: block; margin: 0;
+/* Controls: every control is block-level, full width of its cell, never wider. */
+label { display: block; font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+select, textarea {
+  display: block; width: 100%; min-width: 0; max-width: 100%; margin: 0;
+  font: inherit; font-size: 16px; color: var(--ink); background-color: var(--bg);
+  border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; min-height: 48px;
 }
-input[type="date"], input[type="time"] { -webkit-appearance: none; appearance: none; text-align: left; }
-input::-webkit-date-and-time-value { text-align: left; }
-select { -webkit-appearance: none; appearance: none; padding-right: 32px;
+select { -webkit-appearance: none; appearance: none; padding-right: 34px; text-overflow: ellipsis;
   background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
-textarea { resize: vertical; min-height: 46px; }
-input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+  background-position: calc(100% - 19px) 52%, calc(100% - 14px) 52%; background-size: 5px 5px; background-repeat: no-repeat; }
+textarea { resize: none; line-height: 1.4; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.two > * { min-width: 0; }
 
-button { font: inherit; font-weight: 700; border: 0; border-radius: 12px; padding: 12px 16px; min-height: 46px; cursor: pointer; background: var(--grass); color: var(--on-accent); }
+button { display: block; font: inherit; font-size: 16px; font-weight: 700; border: 0; border-radius: 12px; padding: 12px 16px; min-height: 48px; cursor: pointer;
+  background: var(--grass); color: var(--on-accent); max-width: 100%; text-align: center; line-height: 1.2; }
 button.full { width: 100%; }
-button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); font-weight: 600; }
-button.link { background: none; border: 0; color: var(--sky); padding: 4px 0; min-height: 0; font-weight: 600; font-size: 14px; justify-self: start; }
+button.ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-weight: 600; }
+button.link { background: none; border: 0; color: var(--sky); padding: 6px 0; min-height: 0; font-weight: 600; font-size: 15px; text-align: left; }
 button:disabled { opacity: 0.5; cursor: default; }
-.toast { min-height: 1.4em; font-size: 14px; color: var(--grass); }
+:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+.toast { font-size: 14px; color: var(--grass); }
+.toast:empty { display: none; }
 .toast.err { color: var(--berry); }
 
-/* Payday card */
-.payday { border-color: var(--grass); }
+/* Chat */
+.chat { display: flex; flex-direction: column; gap: 8px; max-height: 55vh; overflow-y: auto; overflow-x: hidden; }
+.chat:empty { display: none; }
+.msg { padding: 10px 13px; border-radius: 16px; max-width: 88%; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.msg.user { align-self: flex-end; background: var(--sky-soft); border-bottom-right-radius: 6px; }
+.msg.agent { align-self: flex-start; background: var(--grass-soft); border-bottom-left-radius: 6px; }
+.msg.action { align-self: center; font-size: 13px; color: var(--muted); background: none; padding: 2px 8px; }
+.suggest { display: flex; flex-wrap: wrap; gap: 8px; }
+.suggest button { background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-weight: 600; font-size: 14px; padding: 8px 12px; min-height: 0; border-radius: 999px; text-align: left; }
+.chatform { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+.chatform textarea { min-height: 48px; max-height: 140px; }
+.chatform button { padding: 12px 14px; }
+.chat-foot { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+
+/* Payday */
 .payday.due { background: var(--sun-soft); border-color: var(--sun); }
-.payday.paid { background: var(--grass-soft); }
-.amount { font-family: var(--display); font-size: 40px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+.payday.paid { background: var(--grass-soft); border-color: var(--grass); }
+.payhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.amount { font-family: var(--display); font-size: 38px; font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); white-space: nowrap; }
 .pill.due { color: var(--sun); border-color: var(--sun); }
 .pill.paid { color: var(--grass); border-color: var(--grass); }
-.message { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; white-space: pre-wrap; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
-.btn-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.message { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; -webkit-user-select: all; user-select: all; }
 
 /* Week list */
-.weeknav { display: grid; grid-template-columns: 46px minmax(0, 1fr) 46px; gap: 8px; align-items: center; }
-.weeknav button { padding: 0; }
+.weeknav { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; align-items: center; }
+.weeknav button { padding: 0; width: 48px; }
 .weeknav h2 { text-align: center; }
-.days { display: grid; }
-.day { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: center; }
-.day:last-child { border-bottom: 0; }
+.day { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.day:last-of-type { border-bottom: 0; }
 .day .when { font-weight: 700; }
-.day .what { color: var(--muted); font-size: 14px; grid-column: 1; }
-.day .pay { font-variant-numeric: tabular-nums; font-weight: 700; grid-row: 1 / span 2; grid-column: 2; text-align: right; }
-.day .pay button { display: block; margin-left: auto; }
-.total { display: flex; justify-content: space-between; font-weight: 800; padding-top: 10px; border-top: 2px solid var(--line); font-variant-numeric: tabular-nums; }
-.empty { padding: 16px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; }
-
-/* Chat */
-.chat { display: grid; gap: 10px; max-height: 420px; overflow-y: auto; }
-.chat:empty { display: none; }
-.msg { padding: 10px 13px; border-radius: 14px; max-width: 88%; white-space: pre-wrap; overflow-wrap: anywhere; }
-.msg.user { justify-self: end; background: var(--sky-soft); }
-.msg.agent { justify-self: start; background: var(--grass-soft); }
-.suggest { display: flex; flex-wrap: wrap; gap: 8px; }
-.suggest button { background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-weight: 600; font-size: 14px; padding: 8px 12px; min-height: 0; }
-.chatform { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.day .what { color: var(--muted); font-size: 14px; }
+.day .right { grid-column: 2; grid-row: 1 / span 2; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.day .right button { margin-left: auto; padding: 2px 0; }
+.total { display: flex; justify-content: space-between; gap: 8px; font-weight: 800; padding-top: 10px; border-top: 2px solid var(--line); font-variant-numeric: tabular-nums; }
+.empty { padding: 14px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; }
 
 details.card { gap: 0; }
-details summary { cursor: pointer; font-family: var(--display); font-weight: 800; font-size: 18px; list-style: none; display: flex; justify-content: space-between; }
+details summary { cursor: pointer; font-family: var(--display); font-weight: 800; font-size: 18px; list-style: none; display: flex; justify-content: space-between; gap: 8px; }
+details summary::-webkit-details-marker { display: none; }
 details summary::after { content: "+"; color: var(--muted); }
 details[open] summary::after { content: "–"; }
-details ul { margin: 12px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+details ul { margin: 12px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
 </style>
 
 <div class="wrap">
   <header>
-    <span class="eyebrow">Krystal · started Nov 2, 2026</span>
+    <span class="eyebrow">Krystal · since Nov 2, 2026</span>
     <h1>Krystal's Babysitting Hub</h1>
-    <p class="muted small" id="status">Connecting to the shared log…</p>
+    <p class="muted small" id="status">Connecting…</p>
   </header>
 
-  <!-- Payday -->
-  <section aria-labelledby="pay-h">
-    <div class="card payday" id="payday">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-        <span class="eyebrow" id="pay-h">Pay Krystal · <span id="pay-week"></span></span>
-        <span class="pill" id="pay-pill">This week so far</span>
-      </div>
-      <div>
-        <div class="amount" id="pay-amount">$0</div>
-        <p class="muted small" id="pay-sub">0 hours at $25/hr</p>
-      </div>
-      <div class="field">
-        <label for="pay-msg">Message to send her</label>
-        <div class="message" id="pay-msg"></div>
-      </div>
-      <div class="btn-row">
-        <button type="button" class="ghost" id="copy-msg">Copy message</button>
-        <button type="button" id="mark-paid">Mark as paid</button>
-      </div>
-      <span class="toast" id="pay-toast" role="status"></span>
+  <!-- Agent chat -->
+  <section class="card" aria-labelledby="agent-h">
+    <h2 id="agent-h">Ask the agent</h2>
+    <p class="muted small" id="agent-intro">Ask what you owe, log her hours, or check PTO. It knows her terms and the log.</p>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <div class="suggest" id="suggest">
+      <button type="button">How much do I owe for today?</button>
+      <button type="button">How much do I owe this week?</button>
+      <button type="button">Log today 9:30 to 3</button>
+      <button type="button">How many PTO days are left?</button>
+    </div>
+    <form class="chatform" id="chat-form">
+      <textarea id="chat-input" rows="1" placeholder="Message the agent" aria-label="Message the agent"></textarea>
+      <button type="submit" id="chat-send">Send</button>
+    </form>
+    <div class="chat-foot">
+      <span class="toast" id="chat-toast"></span>
+      <button type="button" class="link" id="clear-chat" hidden>Clear chat</button>
     </div>
   </section>
 
+  <!-- Payday -->
+  <section class="card payday" id="payday" aria-labelledby="pay-h">
+    <div class="payhead">
+      <h2 id="pay-h">Pay Krystal</h2>
+      <span class="pill" id="pay-pill">This week so far</span>
+    </div>
+    <div>
+      <div class="amount" id="pay-amount">$0</div>
+      <p class="muted small" id="pay-sub">Week of —</p>
+    </div>
+    <div class="stack">
+      <span class="eyebrow">Message to send her</span>
+      <div class="message" id="pay-msg"></div>
+    </div>
+    <div class="stack">
+      <button type="button" class="ghost full" id="copy-msg">Copy message</button>
+      <button type="button" class="full" id="mark-paid">Mark as paid</button>
+    </div>
+    <span class="toast" id="pay-toast" role="status"></span>
+  </section>
+
   <!-- Log a day -->
-  <section aria-labelledby="log-h">
+  <section class="card" aria-labelledby="log-h">
     <h2 id="log-h">Log a day</h2>
-    <form class="card" id="day-form">
-      <div class="form-grid">
-        <div class="field full"><label for="f-date">Date</label><input type="date" id="f-date" required></div>
-        <div class="field time"><label for="f-start">Time in</label><input type="time" id="f-start" value="09:30"></div>
-        <div class="field time"><label for="f-end">Time out</label><input type="time" id="f-end" value="15:00"></div>
-        <div class="field full" id="type-field" hidden>
-          <label for="f-type">Not a regular day?</label>
-          <select id="f-type">
-            <option value="worked">Worked</option>
-            <option value="pto">PTO day (full pay, uses 1 of 8)</option>
-            <option value="away">Family away / not needed (50% pay)</option>
-          </select>
-        </div>
+    <form class="stack" id="day-form">
+      <div><label for="f-date">Day</label><select id="f-date"></select></div>
+      <div class="two" id="time-row">
+        <div><label for="f-start">Time in</label><select id="f-start"></select></div>
+        <div><label for="f-end">Time out</label><select id="f-end"></select></div>
+      </div>
+      <div id="type-field" hidden>
+        <label for="f-type">Kind of day</label>
+        <select id="f-type">
+          <option value="worked">Worked</option>
+          <option value="pto">PTO day (full pay)</option>
+          <option value="away">Family away (half pay)</option>
+        </select>
       </div>
       <button type="button" class="link" id="show-type">Day off or family away?</button>
       <button type="submit" class="full" id="save-day">Save day</button>
@@ -170,42 +193,24 @@ details ul { margin: 12px 0 0; padding-left: 18px; display: grid; gap: 6px; }
   </section>
 
   <!-- Week -->
-  <section aria-label="Week">
+  <section class="stack" aria-label="Week">
     <div class="weeknav">
       <button class="ghost" type="button" id="prev-week" aria-label="Previous week">←</button>
       <h2 id="week-label">This week</h2>
       <button class="ghost" type="button" id="next-week" aria-label="Next week">→</button>
     </div>
     <div class="card" id="week-body"></div>
-    <p class="muted small" id="pto-line">PTO: 8 of 8 days left this year</p>
+    <p class="muted small" id="pto-line"></p>
   </section>
 
-  <!-- Agent -->
-  <section aria-labelledby="agent-h">
-    <h2 id="agent-h">Ask the agent</h2>
-    <div class="card">
-      <div class="suggest" id="suggest">
-        <button type="button">How much do I owe Krystal this week?</button>
-        <button type="button">How many PTO days are left?</button>
-        <button type="button">We're away next Monday. What happens?</button>
-      </div>
-      <div class="chat" id="chat" aria-live="polite"></div>
-      <form class="chatform" id="chat-form">
-        <textarea id="chat-input" placeholder="Ask about pay, PTO, or the schedule" rows="1" aria-label="Message"></textarea>
-        <button type="submit" id="chat-send">Send</button>
-      </form>
-    </div>
-  </section>
-
-  <!-- Terms -->
   <details class="card">
     <summary>The agreement</summary>
     <ul>
       <li>Entertain both kids, spend a lot of time outside, feed them, put away their toys.</li>
-      <li>Mon–Thu, 9:30am–3:00pm (22 hrs/week). If the family is away on a Monday, Friday replaces it with at least 2 weeks' notice.</li>
-      <li>$25/hour, paid weekly by W-2 direct deposit or cash. A full week is $550.</li>
-      <li>8 paid days off per year for vacation, appointments, or sick time ($137.50 each).</li>
-      <li>50% pay ($68.75/day) when the family is away or doesn't need care, without using PTO.</li>
+      <li>Mon–Thu, 9:30am–3:00pm (22 hrs a week). If the family is away on a Monday, Friday replaces it with at least 2 weeks' notice.</li>
+      <li>$25 an hour, paid weekly by W-2 direct deposit or cash. A full week is $550.</li>
+      <li>8 paid days off a year for vacation, appointments, or sick time ($137.50 each).</li>
+      <li>Half pay ($68.75 a day) when the family is away or doesn't need care, without using PTO.</li>
     </ul>
   </details>
 </div>
@@ -213,217 +218,274 @@ details ul { margin: 12px 0 0; padding-left: 18px; display: grid; gap: 6px; }
 <script>
 const RATE = 25, DAY_HOURS = 5.5, PTO_PER_YEAR = 8, START = "2026-11-02";
 const state = { days: {}, payments: {}, weekOffset: 0 };
-let db = null, sample = null;
-const chatHistory = [];
+let db = null, sample = null, sampleOpts = {};
 const $ = (id) => document.getElementById(id);
-const money = (n) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
 const round2 = (n) => Math.round(n * 100) / 100;
+const money = (n) => "$" + round2(n).toLocaleString("en-US", { minimumFractionDigits: round2(n) % 1 ? 2 : 0, maximumFractionDigits: 2 });
 
 function iso(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
-function parseISO(s) { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); }
+function parseISO(s) { const [y, m, d] = String(s).split("-").map(Number); return new Date(y, m - 1, d); }
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
 function mondayOf(d) { const x = new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; }
 function hoursBetween(a, b) { if (!a || !b) return 0; const [ah, am] = a.split(":").map(Number), [bh, bm] = b.split(":").map(Number); return Math.max(0, (bh * 60 + bm - ah * 60 - am) / 60); }
 function fmtTime(t) { if (!t) return ""; let [h, m] = t.split(":").map(Number); const ap = h >= 12 ? "pm" : "am"; h = h % 12 || 12; return m ? `${h}:${String(m).padStart(2,"0")}${ap}` : `${h}${ap}`; }
 function fmtDay(s) { return parseISO(s).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }); }
 function fmtShort(d) { return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
+const todayISO = () => iso(new Date());
 
 function dayPay(e) {
   if (e.type === "pto") return { hours: 0, pay: DAY_HOURS * RATE };
   if (e.type === "away") return { hours: 0, pay: DAY_HOURS * RATE * 0.5 };
-  const h = hoursBetween(e.start, e.end); return { hours: h, pay: h * RATE };
+  const h = hoursBetween(e.start, e.end); return { hours: round2(h), pay: h * RATE };
 }
+function dayText(e) { return e.type === "pto" ? "PTO day" : e.type === "away" ? "Family away, half pay" : `${fmtTime(e.start)} – ${fmtTime(e.end)} · ${dayPay(e).hours} hrs`; }
 function ptoUsed() {
   const today = new Date(); let a = parseISO(START);
   while (true) { const n = new Date(a); n.setFullYear(n.getFullYear() + 1); if (n > today) break; a = n; }
   const b = new Date(a); b.setFullYear(b.getFullYear() + 1);
   return Object.values(state.days).filter(e => e.type === "pto" && parseISO(e.date) >= a && parseISO(e.date) < b).length;
 }
-function week(offset) {
-  const mon = mondayOf(new Date()); mon.setDate(mon.getDate() + offset * 7);
-  const sun = new Date(mon); sun.setDate(sun.getDate() + 6);
+function week(offset, base) {
+  const mon = base ? mondayOf(base) : mondayOf(new Date()); mon.setDate(mon.getDate() + (offset || 0) * 7);
+  const sun = addDays(mon, 6);
   const list = Object.values(state.days).filter(e => { const d = parseISO(e.date); return d >= mon && d <= sun; }).sort((x, y) => x.date.localeCompare(y.date));
   let hours = 0, pay = 0, pto = 0, away = 0;
   list.forEach(e => { const p = dayPay(e); hours += p.hours; pay += p.pay; if (e.type === "pto") pto++; if (e.type === "away") away++; });
   return { mon, sun, list, hours: round2(hours), pay: round2(pay), pto, away, key: iso(mon) };
 }
 
-// Which week the payday card is about: last week if it's Mon–Wed and last week is unpaid, else this week.
+// ---------- Selects ----------
+function fillSelects() {
+  const times = []; for (let m = 6 * 60; m <= 21 * 60; m += 15) times.push(`${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
+  for (const id of ["f-start", "f-end"]) { const s = $(id); s.textContent = ""; times.forEach(t => s.add(new Option(fmtTime(t), t))); }
+  $("f-start").value = "09:30"; $("f-end").value = "15:00";
+  const s = $("f-date"); s.textContent = ""; const today = new Date(); today.setHours(0,0,0,0);
+  let from = addDays(today, -21); if (from < parseISO(START)) from = parseISO(START);
+  for (let d = addDays(today, 14); d >= from; d = addDays(d, -1)) {
+    const k = iso(d), label = (k === todayISO() ? "Today · " : k === iso(addDays(today, -1)) ? "Yesterday · " : "") + fmtDay(k);
+    s.add(new Option(label, k));
+  }
+  s.value = todayISO();
+}
+function ensureDateOption(k) { const s = $("f-date"); if (![...s.options].some(o => o.value === k)) s.add(new Option(fmtDay(k), k)); s.value = k; }
+
+// ---------- Payday ----------
 function payWeekOffset() {
-  const dow = (new Date().getDay() + 6) % 7; // 0 = Mon
-  const last = week(-1);
-  if (dow <= 2 && last.list.length && !state.payments[last.key]?.paid) return -1;
-  return 0;
+  const dow = (new Date().getDay() + 6) % 7, last = week(-1);
+  return (dow <= 2 && last.list.length && !state.payments[last.key]?.paid) ? -1 : 0;
 }
 function payMessage(w) {
-  const lastWorked = w.list.length ? parseISO(w.list[w.list.length - 1].date) : new Date(w.mon.getTime() + 3 * 864e5);
-  const range = `${fmtShort(w.mon)}–${lastWorked.getDate()}`;
-  let extra = [];
+  const last = w.list.length ? parseISO(w.list[w.list.length - 1].date) : addDays(w.mon, 3);
+  const range = iso(last) === iso(w.mon) ? fmtShort(w.mon) : last.getMonth() === w.mon.getMonth() ? `${fmtShort(w.mon)}–${last.getDate()}` : `${fmtShort(w.mon)}–${fmtShort(last)}`;
+  const extra = [];
   if (w.pto) extra.push(`${w.pto} PTO day${w.pto > 1 ? "s" : ""}`);
-  if (w.away) extra.push(`${w.away} day${w.away > 1 ? "s" : ""} at half pay while we were away`);
-  const hoursPart = w.hours ? `you worked ${w.hours} hours this week (${range})` : `for this week (${range})`;
-  return `Hi Krystal! ${hoursPart[0].toUpperCase() + hoursPart.slice(1)}${extra.length ? ", plus " + extra.join(" and ") : ""}. I've sent ${money(w.pay)} to your account. Thank you so much!`;
+  if (w.away) extra.push(`${w.away} half-pay day${w.away > 1 ? "s" : ""} while we were away`);
+  const lead = w.hours ? `You worked ${w.hours} hours this week (${range})` : `For this week (${range})`;
+  return `Hi Krystal! ${lead}${extra.length ? ", plus " + extra.join(" and ") : ""}. I've sent ${money(w.pay)} to your account. Thank you so much!`;
 }
-
 function renderPayday() {
   const off = payWeekOffset(), w = week(off), paid = state.payments[w.key]?.paid;
-  const dow = (new Date().getDay() + 6) % 7, afterThu = off === -1 || dow > 3 || (dow === 3 && new Date().getHours() >= 15);
-  $("pay-week").textContent = `${fmtShort(w.mon)} – ${fmtShort(new Date(w.mon.getTime() + 3 * 864e5))}`;
+  const now = new Date(), dow = (now.getDay() + 6) % 7, due = off === -1 || dow > 3 || (dow === 3 && now.getHours() >= 15);
   $("pay-amount").textContent = money(w.pay);
-  const bits = [`${w.hours} hrs × $25`];
-  if (w.pto) bits.push(`${w.pto} PTO`); if (w.away) bits.push(`${w.away} away day${w.away > 1 ? "s" : ""}`);
+  const bits = [`Week of ${fmtShort(w.mon)}`, `${w.hours} hrs × $25`];
+  if (w.pto) bits.push(`${w.pto} PTO`); if (w.away) bits.push(`${w.away} away`);
   $("pay-sub").textContent = bits.join(" · ");
   $("pay-msg").textContent = payMessage(w);
   const card = $("payday"), pill = $("pay-pill"), btn = $("mark-paid");
-  card.className = "card payday"; pill.className = "pill";
-  if (paid) { card.classList.add("paid"); pill.classList.add("paid"); pill.textContent = `Paid ${money(state.payments[w.key].amount ?? w.pay)}`; btn.textContent = "Undo paid"; btn.className = "ghost"; }
-  else if (afterThu && w.pay > 0) { card.classList.add("due"); pill.classList.add("due"); pill.textContent = "Payment due"; btn.textContent = "Mark as paid"; btn.className = ""; }
-  else { pill.textContent = "This week so far"; btn.textContent = "Mark as paid"; btn.className = ""; }
+  card.classList.remove("due", "paid"); pill.className = "pill";
+  if (paid) { card.classList.add("paid"); pill.classList.add("paid"); pill.textContent = "Paid"; btn.textContent = "Undo paid"; btn.className = "ghost full"; }
+  else if (due && w.pay > 0) { card.classList.add("due"); pill.classList.add("due"); pill.textContent = "Payment due"; btn.textContent = "Mark as paid"; btn.className = "full"; }
+  else { pill.textContent = "This week so far"; btn.textContent = "Mark as paid"; btn.className = "full"; }
   btn.dataset.week = w.key; btn.dataset.amount = w.pay;
 }
 
+// ---------- Week ----------
 function renderWeek() {
   const w = week(state.weekOffset);
   $("week-label").textContent = state.weekOffset === 0 ? "This week" : `Week of ${fmtShort(w.mon)}`;
   const body = $("week-body"); body.textContent = "";
-  if (!w.list.length) {
-    const e = document.createElement("div"); e.className = "empty";
-    e.textContent = "No days logged this week. Add one above.";
-    body.append(e); return;
-  }
-  const list = document.createElement("div"); list.className = "days";
+  if (!w.list.length) { const e = document.createElement("div"); e.className = "empty"; e.textContent = "No days logged this week."; body.append(e); return; }
   w.list.forEach(e => {
-    const p = dayPay(e), row = document.createElement("div"); row.className = "day";
+    const row = document.createElement("div"); row.className = "day";
     const when = document.createElement("div"); when.className = "when"; when.textContent = fmtDay(e.date);
-    const what = document.createElement("div"); what.className = "what";
-    what.textContent = e.type === "pto" ? "PTO day" : e.type === "away" ? "Family away · half pay" : `${fmtTime(e.start)} – ${fmtTime(e.end)} · ${round2(p.hours)} hrs`;
-    const pay = document.createElement("div"); pay.className = "pay"; pay.textContent = money(round2(p.pay));
+    const what = document.createElement("div"); what.className = "what"; what.textContent = dayText(e);
+    const right = document.createElement("div"); right.className = "right"; right.textContent = money(dayPay(e).pay);
     const ed = document.createElement("button"); ed.type = "button"; ed.className = "link"; ed.textContent = "Edit"; ed.onclick = () => loadIntoForm(e);
-    pay.append(ed);
-    row.append(when, pay, what); list.append(row);
+    right.append(ed); row.append(when, right, what); body.append(row);
   });
   const tot = document.createElement("div"); tot.className = "total";
   const l = document.createElement("span"); l.textContent = `${w.hours} hrs`;
   const r = document.createElement("span"); r.textContent = money(w.pay);
-  tot.append(l, r);
-  body.append(list, tot);
+  tot.append(l, r); body.append(tot);
 }
-
 function render() {
   renderPayday(); renderWeek();
-  const used = ptoUsed();
-  $("pto-line").textContent = `PTO: ${Math.max(0, PTO_PER_YEAR - used)} of 8 days left this year`;
+  $("pto-line").textContent = `PTO: ${Math.max(0, PTO_PER_YEAR - ptoUsed())} of 8 days left this year`;
 }
 
-// ---------- Form ----------
-function syncTimes() { const w = $("f-type").value === "worked"; document.querySelectorAll(".field.time").forEach(f => f.hidden = !w); }
+// ---------- Saving ----------
+async function saveDay(e) {
+  if (!db) throw new Error("The shared log isn't connected. Open this page on claude.ai while signed in.");
+  e = { date: String(e.date), type: ["worked", "pto", "away"].includes(e.type) ? e.type : "worked", start: e.start || "", end: e.end || "", updatedAt: Date.now() };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(e.date)) throw new Error("Date must be YYYY-MM-DD.");
+  if (e.type !== "worked") { e.start = ""; e.end = ""; }
+  else if (hoursBetween(e.start, e.end) <= 0) throw new Error("Time out needs to be after time in.");
+  if (e.type === "pto" && state.days[e.date]?.type !== "pto" && ptoUsed() >= PTO_PER_YEAR) throw new Error("All 8 PTO days are used for this year.");
+  await db.collection("days").doc(e.date).set(e);
+  return e;
+}
+async function setPaid(weekKey, paid) {
+  if (!db) throw new Error("The shared log isn't connected.");
+  const w = week(0, parseISO(weekKey));
+  await db.collection("payments").doc(w.key).set({ week: w.key, paid: !!paid, amount: w.pay, paidAt: paid ? Date.now() : null });
+  return { week: w.key, paid: !!paid, amount: w.pay };
+}
+
+function syncTimes() { $("time-row").hidden = $("f-type").value !== "worked"; }
 $("f-type").addEventListener("change", syncTimes);
 $("show-type").onclick = () => { $("type-field").hidden = false; $("show-type").hidden = true; };
-$("f-date").value = iso(new Date());
 function loadIntoForm(e) {
-  $("f-date").value = e.date; $("f-type").value = e.type || "worked"; $("f-start").value = e.start || "09:30"; $("f-end").value = e.end || "15:00";
-  if (e.type && e.type !== "worked") { $("type-field").hidden = false; $("show-type").hidden = true; }
-  syncTimes(); $("day-form").scrollIntoView({ behavior: "smooth", block: "start" });
+  ensureDateOption(e.date); $("f-type").value = e.type || "worked";
+  $("f-start").value = e.start || "09:30"; $("f-end").value = e.end || "15:00";
+  const special = e.type && e.type !== "worked"; $("type-field").hidden = !special; $("show-type").hidden = special;
+  syncTimes(); $("day-form").scrollIntoView({ behavior: "smooth", block: "center" });
 }
 function toast(id, msg, err) { const t = $(id); t.textContent = msg; t.className = "toast" + (err ? " err" : ""); }
-
 $("day-form").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  if (!db) { toast("form-toast", "The shared log isn't connected. Open this page signed in to claude.ai.", true); return; }
-  const e = { date: $("f-date").value, type: $("f-type").value, start: $("f-start").value, end: $("f-end").value, updatedAt: Date.now() };
-  if (!e.date) { toast("form-toast", "Pick a date first.", true); return; }
-  if (e.type !== "worked") { e.start = ""; e.end = ""; }
-  else if (hoursBetween(e.start, e.end) <= 0) { toast("form-toast", "Time out needs to be after time in.", true); return; }
-  if (e.type === "pto" && state.days[e.date]?.type !== "pto" && ptoUsed() >= PTO_PER_YEAR) { toast("form-toast", "All 8 PTO days are used for this year.", true); return; }
-  $("save-day").disabled = true;
+  ev.preventDefault(); $("save-day").disabled = true;
   try {
-    await db.collection("days").doc(e.date).set(e);
-    toast("form-toast", `Saved ${fmtDay(e.date)}.`);
+    const e = await saveDay({ date: $("f-date").value, type: $("f-type").value, start: $("f-start").value, end: $("f-end").value });
+    toast("form-toast", `Saved ${fmtDay(e.date)}: ${money(dayPay(e).pay)}.`);
     $("f-type").value = "worked"; $("type-field").hidden = true; $("show-type").hidden = false; syncTimes();
-  } catch (err) { toast("form-toast", err?.code === "permission_denied" ? "You have view-only access, so you can't save days." : "Couldn't save. Try again in a moment.", true); }
+  } catch (err) { toast("form-toast", err?.code === "permission_denied" ? "You have view-only access, so you can't save days." : (err?.message || "Couldn't save. Try again."), true); }
   finally { $("save-day").disabled = false; }
 });
-
-// ---------- Payday actions ----------
 $("copy-msg").onclick = async () => {
-  const text = $("pay-msg").textContent;
-  try { await navigator.clipboard.writeText(text); toast("pay-toast", "Message copied. Paste it into a text to Krystal."); }
-  catch { const r = document.createRange(); r.selectNodeContents($("pay-msg")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("pay-toast", "Message selected. Tap Copy to copy it."); }
+  try { await navigator.clipboard.writeText($("pay-msg").textContent); toast("pay-toast", "Copied. Paste it into a text to Krystal."); }
+  catch { const r = document.createRange(); r.selectNodeContents($("pay-msg")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("pay-toast", "Message selected. Tap Copy."); }
 };
 $("mark-paid").onclick = async () => {
-  if (!db) return;
-  const key = $("mark-paid").dataset.week, amount = Number($("mark-paid").dataset.amount);
-  const paid = !state.payments[key]?.paid;
-  try { await db.collection("payments").doc(key).set({ week: key, paid, amount, paidAt: paid ? Date.now() : null }); toast("pay-toast", paid ? `Marked ${money(amount)} as paid.` : "Marked as not paid."); }
-  catch { toast("pay-toast", "Couldn't update. Try again.", true); }
+  const key = $("mark-paid").dataset.week, paid = !state.payments[key]?.paid;
+  try { const r = await setPaid(key, paid); toast("pay-toast", paid ? `Marked ${money(r.amount)} as paid.` : "Marked as not paid."); }
+  catch (err) { toast("pay-toast", err?.message || "Couldn't update. Try again.", true); }
 };
-
 $("prev-week").onclick = () => { state.weekOffset--; renderWeek(); };
 $("next-week").onclick = () => { state.weekOffset++; renderWeek(); };
 
 // ---------- Agent ----------
+let chatHistory = [];
+try { chatHistory = JSON.parse(localStorage.getItem("krystal-chat") || "[]").slice(-30); } catch {}
+function saveChat() { try { localStorage.setItem("krystal-chat", JSON.stringify(chatHistory.slice(-30))); } catch {} }
+
 function buildContext() {
-  const recent = Object.values(state.days).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 40)
-    .map(e => { const p = dayPay(e); return `- ${fmtDay(e.date)}: ${e.type === "pto" ? "PTO day" : e.type === "away" ? "family away (50%)" : `${fmtTime(e.start)}-${fmtTime(e.end)} = ${round2(p.hours)} hrs`}, pay ${money(round2(p.pay))}`; }).join("\n") || "(nothing logged yet)";
+  const now = new Date(), t = todayISO(), te = state.days[t];
+  const dow = (now.getDay() + 6) % 7, scheduledToday = dow <= 3;
   const w = week(0), lw = week(-1);
-  const paidWeeks = Object.values(state.payments).filter(p => p.paid).map(p => `${p.week}: ${money(p.amount)}`).join(", ") || "none yet";
-  return `You are the assistant for a family and their babysitter, Krystal. Either the parents or Krystal may be asking. Be warm and brief. Plain text, no markdown headings.
+  const wLine = (x) => `${x.hours} hrs worked${x.pto ? `, ${x.pto} PTO` : ""}${x.away ? `, ${x.away} away` : ""} = ${money(x.pay)} (${state.payments[x.key]?.paid ? "PAID" : "not marked paid"})`;
+  const log = Object.values(state.days).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30)
+    .map(e => `- ${e.date} ${fmtDay(e.date)}: ${dayText(e)} = ${money(dayPay(e).pay)}`).join("\n") || "(nothing logged yet)";
+  return `You are the family's babysitting assistant, chatting in a phone app. The person talking to you is usually the parent, sometimes Krystal, the babysitter. Reply like a helpful text message: short, warm, plain text, no markdown, no headings. Give dollar amounts clearly.
 
-Today is ${new Date().toDateString()}. Krystal started Monday, November 2, 2026, caring for both of the family's kids.
+NOW: ${now.toLocaleString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}. Today's date key is ${t}.
+Krystal started Monday, Nov 2, 2026, caring for both of the family's kids.
 
-THE AGREEMENT (long-term position):
-- Duties: entertain both kids, spend a lot of time outside, feed them, put away their toys.
-- Schedule: 9:30am to 3:00pm (5.5 hrs/day), Monday to Thursday, 22 hrs/week. If the family is out of town on a Monday, Friday replaces it with at least 2 weeks' notice.
-- Pay: $25/hour, paid weekly, W-2 direct deposit or cash. Full week = $550. Full day = $137.50.
-- PTO: 8 paid days off per year (vacation, appointments, sick). Year runs from the start date. PTO day = $137.50.
-- Guaranteed pay: 50% ($68.75 per scheduled day) when the family is away or doesn't need care, without using PTO.
-If something isn't covered (holidays, overtime, late pickup), say so and suggest they agree on it. Don't invent terms.
+AGREEMENT:
+- Duties: entertain both kids, lots of time outside, feed them, put away their toys.
+- Schedule: Mon–Thu, 9:30am–3:00pm (5.5 hrs a day, 22 hrs a week). If the family is out of town on a Monday, Friday replaces it with at least 2 weeks' notice.
+- Pay: $25/hour, paid weekly, W-2 direct deposit or cash. Full day $137.50, full week $550.
+- PTO: 8 paid days off per year (vacation, appointments, sick), year starts Nov 2. PTO day = $137.50.
+- Half pay ($68.75 per scheduled day) when the family is away or doesn't need care; doesn't use PTO.
+Anything not listed (holidays, overtime, late pickup, mileage) isn't in the agreement: say so and suggest they agree on it. Never invent terms.
 
-THIS WEEK: ${w.hours} hrs, ${money(w.pay)} owed so far. LAST WEEK: ${lw.hours} hrs, ${money(lw.pay)}.
-Weeks marked paid (week starting Monday): ${paidWeeks}.
-PTO used this year: ${ptoUsed()} of 8.
+FIGURES (already calculated, trust these):
+- Today: ${te ? `${dayText(te)} = ${money(dayPay(te).pay)}` : `nothing logged yet.${scheduledToday ? " Today is a scheduled day; a full 9:30–3 day is $137.50." : " Today is not a scheduled day."}`}
+- This week (week of ${fmtShort(w.mon)}): ${wLine(w)}.
+- Last week (week of ${fmtShort(lw.mon)}): ${wLine(lw)}.
+- PTO used this year: ${ptoUsed()} of 8.
 
-LOG (most recent first):
-${recent}`;
+LOG (newest first):
+${log}
+
+TOOLS: Use log_day when they tell you hours or a day off ("log today 9:30 to 3", "she left at 2", "she's sick today" = PTO, "we're away Monday" = away). Times are 24h HH:MM. Fill in obvious defaults (start 09:30, end 15:00) when they say "full day". If a day is already logged, logging again replaces it; mention that. Use mark_week_paid when they say they paid her. After a tool runs, confirm what changed and the new amount. If what they said is ambiguous, ask one short question instead of guessing.`;
 }
-function addMsg(role, text) { const d = document.createElement("div"); d.className = "msg " + role; d.textContent = text; $("chat").append(d); $("chat").scrollTop = $("chat").scrollHeight; return d; }
+
+const agentTools = [
+  { name: "log_day",
+    description: "Save or replace one day in Krystal's shared log. Returns the saved day and its pay.",
+    inputSchema: { type: "object", properties: {
+      date: { type: "string", description: "YYYY-MM-DD" },
+      type: { type: "string", enum: ["worked", "pto", "away"], description: "worked = hourly; pto = paid day off (full pay, uses 1 of 8); away = family away or care not needed (half pay)" },
+      start: { type: "string", description: "Time in, 24h HH:MM. Only for worked." },
+      end: { type: "string", description: "Time out, 24h HH:MM. Only for worked." } }, required: ["date", "type"] },
+    async execute(input) {
+      const e = await saveDay({ date: input.date, type: input.type, start: input.start, end: input.end });
+      state.days[e.date] = e;
+      addMsg("action", `Logged ${fmtDay(e.date)}: ${dayText(e)}`);
+      const w = week(0, parseISO(e.date));
+      return { saved: { date: e.date, summary: dayText(e), pay: money(dayPay(e).pay) }, week_total: money(w.pay), week_hours: w.hours };
+    } },
+  { name: "mark_week_paid",
+    description: "Mark a week's pay as paid (or not paid). Pass any date in that week. Returns the week and amount.",
+    inputSchema: { type: "object", properties: { date: { type: "string", description: "Any YYYY-MM-DD in the week" }, paid: { type: "boolean" } }, required: ["date", "paid"] },
+    async execute(input) {
+      const r = await setPaid(String(input.date), input.paid !== false);
+      addMsg("action", r.paid ? `Marked week of ${fmtShort(parseISO(r.week))} paid (${money(r.amount)})` : `Marked week of ${fmtShort(parseISO(r.week))} not paid`);
+      return { week_of: r.week, paid: r.paid, amount: money(r.amount) };
+    } }
+];
+
+function addMsg(role, text) {
+  const d = document.createElement("div"); d.className = "msg " + role; d.textContent = text;
+  $("chat").append(d); $("chat").scrollTop = $("chat").scrollHeight; $("clear-chat").hidden = false; return d;
+}
+function autosize() { const t = $("chat-input"); t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight + 2, 140) + "px"; }
 async function ask(q) {
   q = q.trim(); if (!q) return;
-  if (!sample) { addMsg("agent", "The agent isn't available here. Open the page on claude.ai while signed in."); return; }
-  addMsg("user", q); $("chat-input").value = "";
-  const bubble = addMsg("agent", "Thinking…"); $("chat-send").disabled = true;
-  const prior = chatHistory.slice(-10);
+  if (!sample) { addMsg("agent", "I'm not available in this view. Open the page on claude.ai while signed in."); return; }
+  addMsg("user", q); $("chat-input").value = ""; autosize();
+  const bubble = addMsg("agent", "Thinking…"); $("chat-send").disabled = true; toast("chat-toast", "");
+  const prior = chatHistory.slice(-12);
+  const ctx = buildContext() + "\n\nCONVERSATION:";
   const input = prior.length
-    ? [{ role: "user", content: buildContext() + "\n\nQuestion:\n" + prior[0].content }, ...prior.slice(1), { role: "user", content: q }]
-    : [{ role: "user", content: buildContext() + "\n\nQuestion:\n" + q }];
+    ? [{ role: "user", content: ctx + "\n" + prior[0].content }, ...prior.slice(1), { role: "user", content: q }]
+    : [{ role: "user", content: ctx + "\n" + q }];
+  if (input.length > 1 && input[1].role === "user") input.splice(1, 1); // keep turns alternating
   try {
-    const { text } = await sample(input, { cache: false, onText: ({ text }) => { bubble.textContent = text; $("chat").scrollTop = $("chat").scrollHeight; } });
-    bubble.textContent = text; chatHistory.push({ role: "user", content: q }, { role: "assistant", content: text });
+    const opts = { ...sampleOpts, onText: ({ text }) => { bubble.textContent = text; $("chat").scrollTop = $("chat").scrollHeight; } };
+    if (sampleOpts.tools) opts.tools = agentTools; else opts.cache = false;
+    const { text } = await sample(input, opts);
+    bubble.textContent = text || "Done.";
+    chatHistory.push({ role: "user", content: q }, { role: "assistant", content: text || "Done." }); saveChat();
   } catch (err) {
-    bubble.textContent = err?.code === "not_granted" ? "The agent needs your OK to use Claude. Reload and choose Allow."
-      : err?.code === "rate_limited" ? "Too many questions at once. Wait a minute and try again."
-      : err?.text || "Couldn't reach Claude. Try again.";
-  } finally { $("chat-send").disabled = false; }
+    bubble.textContent = err?.code === "not_granted" ? "I need your OK to use Claude. Reload the page and tap Allow."
+      : err?.code === "rate_limited" ? "Too many messages at once. Try again in a minute."
+      : err?.text || "I couldn't reach Claude. Try again.";
+  } finally { $("chat-send").disabled = false; render(); }
 }
+chatHistory.forEach(m => addMsg(m.role === "user" ? "user" : "agent", m.content));
 $("chat-form").addEventListener("submit", (e) => { e.preventDefault(); ask($("chat-input").value); });
-$("suggest").addEventListener("click", (e) => { if (e.target.tagName === "BUTTON") ask(e.target.textContent); });
+$("chat-input").addEventListener("input", autosize);
+$("suggest").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) ask(b.textContent); });
+$("clear-chat").onclick = () => { chatHistory = []; saveChat(); $("chat").textContent = ""; $("clear-chat").hidden = true; };
 
 // ---------- Boot ----------
-syncTimes(); render();
+fillSelects(); syncTimes(); render();
 (async () => {
-  if (!window.claude?.use) { $("status").textContent = "Open this page on claude.ai to use the shared log."; return; }
-  claude.use("sample").then(s => { sample = s; });
+  if (!window.claude?.use) { $("status").textContent = "Open this page on claude.ai to use it."; return; }
+  claude.use("sample").then(async s => {
+    sample = s; if (!s) { $("agent-intro").textContent = "The agent isn't available here. Open the page on claude.ai while signed in."; return; }
+    try { const lim = await s.limits(); if (lim?.tools) sampleOpts.tools = true; if (!lim?.modelTiers || lim.modelTiers.includes("quick")) sampleOpts.modelTier = "quick"; } catch {}
+  });
   db = await claude.use("db");
   if (!db) { $("status").textContent = "Sign in to claude.ai to see the shared log."; return; }
   const timer = setTimeout(() => { $("status").textContent = "The shared log is slow to load. It will appear when it connects."; }, 10000);
   db.collection("days").onSnapshot((snap) => {
     clearTimeout(timer);
     state.days = {}; snap.docs.forEach(d => { const v = d.data(); if (v) state.days[d.id] = { ...v, date: v.date || d.id }; });
-    $("status").textContent = "Shared with Krystal · updates live";
-    render();
+    $("status").textContent = "Shared with Krystal · updates live"; render();
   }, () => { clearTimeout(timer); $("status").textContent = "Couldn't load the shared log. Reload to try again."; });
   db.collection("payments").onSnapshot((snap) => {
-    state.payments = {}; snap.docs.forEach(d => { const v = d.data(); if (v) state.payments[d.id] = { ...v, week: v.week || d.id }; });
-    render();
+    state.payments = {}; snap.docs.forEach(d => { const v = d.data(); if (v) state.payments[d.id] = { ...v, week: v.week || d.id }; }); render();
   }, () => {});
 })();
 </script>
