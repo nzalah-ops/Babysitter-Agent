@@ -275,8 +275,9 @@ function payWeekOffset() {
   return (dow <= 2 && last.list.length && !state.payments[last.key]?.paid) ? -1 : 0;
 }
 function payMessage(w) {
-  const last = w.list.length ? parseISO(w.list[w.list.length - 1].date) : addDays(w.mon, 3);
-  const range = iso(last) === iso(w.mon) ? fmtShort(w.mon) : last.getMonth() === w.mon.getMonth() ? `${fmtShort(w.mon)}–${last.getDate()}` : `${fmtShort(w.mon)}–${fmtShort(last)}`;
+  const lastLogged = w.list.length ? parseISO(w.list[w.list.length - 1].date) : null;
+  const last = lastLogged && lastLogged > addDays(w.mon, 3) ? lastLogged : addDays(w.mon, 3);
+  const range = last.getMonth() === w.mon.getMonth() ? `${fmtShort(w.mon)}–${last.getDate()}` : `${fmtShort(w.mon)}–${fmtShort(last)}`;
   const extra = [];
   if (w.pto) extra.push(`${w.pto} PTO day${w.pto > 1 ? "s" : ""}`);
   if (w.away) extra.push(`${w.away} half-pay day${w.away > 1 ? "s" : ""} while we were away`);
