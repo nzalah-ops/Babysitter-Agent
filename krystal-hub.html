@@ -1,0 +1,403 @@
+<title>Krystal's Babysitting Hub</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
+<style>
+/* Layout: a single column "fridge board" — summary strip, then log, agent chat, terms. */
+:root {
+  --bg: #f3f7f4;
+  --surface: #ffffff;
+  --ink: #1d2b26;
+  --muted: #5b6d66;
+  --line: #d6e2dc;
+  --grass: #2f7d57;
+  --grass-soft: #e1f1e8;
+  --sky: #2f6fa8;
+  --sky-soft: #e3eef8;
+  --sun: #b7791f;
+  --sun-soft: #fbf0dc;
+  --berry: #b0415a;
+  --berry-soft: #f8e4e9;
+  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body: "Nunito Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121a17; --surface: #1a2420; --ink: #e6efe9; --muted: #9db0a8; --line: #2c3a35;
+  --grass: #6cc597; --grass-soft: #1f3a2d; --sky: #7fb5e6; --sky-soft: #1c2f42;
+  --sun: #e2b25e; --sun-soft: #3a2f1b; --berry: #e78aa0; --berry-soft: #3d2229; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #121a17; --surface: #1a2420; --ink: #e6efe9; --muted: #9db0a8; --line: #2c3a35;
+  --grass: #6cc597; --grass-soft: #1f3a2d; --sky: #7fb5e6; --sky-soft: #1c2f42;
+  --sun: #e2b25e; --sun-soft: #3a2f1b; --berry: #e78aa0; --berry-soft: #3d2229; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 920px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(28px, 6vw, 40px); font-weight: 800; }
+h2 { font-size: 22px; font-weight: 800; }
+h3 { font-size: 16px; font-weight: 600; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+header { display: grid; gap: 6px; }
+.status { font-size: 13px; color: var(--muted); }
+
+.strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 640px) { .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; gap: 2px; }
+.tile .num { font-family: var(--display); font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.tile.pay .num { color: var(--grass); }
+.tile.pto .num { color: var(--sky); }
+
+section { display: grid; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.field { display: grid; gap: 4px; min-width: 0; flex: 1 1 140px; }
+.field.wide { flex-basis: 100%; }
+label { font-size: 13px; font-weight: 700; color: var(--muted); }
+input, select, textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; width: 100%; box-sizing: border-box; }
+textarea { resize: vertical; min-height: 64px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+button { font: inherit; font-weight: 700; border: 0; border-radius: 10px; padding: 10px 16px; cursor: pointer; background: var(--grass); color: var(--surface); }
+button.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 6px 10px; font-size: 13px; }
+button:disabled { opacity: 0.5; cursor: default; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+.chip.worked { background: var(--grass-soft); color: var(--grass); }
+.chip.pto { background: var(--sky-soft); color: var(--sky); }
+.chip.away { background: var(--sun-soft); color: var(--sun); }
+.chip.off { background: var(--berry-soft); color: var(--berry); }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+td.money, th.money { text-align: right; white-space: nowrap; }
+td .note { color: var(--muted); font-size: 13px; }
+tfoot td { font-weight: 800; border-bottom: 0; }
+.weeknav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.empty { padding: 18px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; }
+
+.chat { display: grid; gap: 10px; max-height: 460px; overflow-y: auto; padding-right: 4px; }
+.msg { padding: 10px 13px; border-radius: 14px; max-width: 85%; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.user { justify-self: end; background: var(--sky-soft); }
+.msg.agent { justify-self: start; background: var(--grass-soft); }
+.suggest { display: flex; flex-wrap: wrap; gap: 8px; }
+.suggest button { background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-weight: 600; font-size: 13px; padding: 6px 11px; }
+.chatform { display: flex; gap: 8px; }
+.chatform textarea { min-height: 44px; flex: 1; }
+
+.terms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 640px) { .terms { grid-template-columns: 1fr; } }
+.terms ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.toast { min-height: 1.4em; font-size: 13px; color: var(--grass); }
+.toast.err { color: var(--berry); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Started Monday, Nov 2, 2026</span>
+    <h1>Krystal's Babysitting Hub</h1>
+    <p class="muted">Log each day, see what's owed this week, track PTO, and ask the agent anything about the job.</p>
+    <p class="status" id="status">Connecting to the shared log…</p>
+  </header>
+
+  <div class="strip" aria-label="This week at a glance">
+    <div class="tile"><span class="eyebrow">Hours this week</span><span class="num" id="t-hours">0</span><span class="muted" style="font-size:13px">of 22 scheduled</span></div>
+    <div class="tile pay"><span class="eyebrow">Pay this week</span><span class="num" id="t-pay">$0</span><span class="muted" style="font-size:13px">at $25/hr</span></div>
+    <div class="tile pto"><span class="eyebrow">PTO left</span><span class="num" id="t-pto">8</span><span class="muted" style="font-size:13px" id="t-pto-sub">of 8 days this year</span></div>
+    <div class="tile"><span class="eyebrow">Kids</span><span class="num" id="t-kids" style="font-size:18px;padding-top:6px">Both kids</span><button class="ghost" id="edit-kids" type="button" style="justify-self:start;margin-top:4px">Set names</button></div>
+  </div>
+
+  <div class="card" id="kids-card" hidden>
+    <h3>Kids' names</h3>
+    <div class="row">
+      <div class="field"><label for="kid1">First child</label><input id="kid1" placeholder="Name"></div>
+      <div class="field"><label for="kid2">Second child</label><input id="kid2" placeholder="Name"></div>
+      <button id="save-kids" type="button">Save names</button>
+    </div>
+  </div>
+
+  <section aria-labelledby="log-h">
+    <h2 id="log-h">Log a day</h2>
+    <form class="card" id="day-form">
+      <div class="row">
+        <div class="field"><label for="f-date">Date</label><input type="date" id="f-date" required></div>
+        <div class="field"><label for="f-type">What kind of day</label>
+          <select id="f-type">
+            <option value="worked">Worked</option>
+            <option value="pto">PTO day (full pay, uses 1 of 8)</option>
+            <option value="away">Family away / not needed (50% pay)</option>
+            <option value="off">Unpaid / no work</option>
+          </select></div>
+        <div class="field time"><label for="f-start">Start</label><input type="time" id="f-start" value="09:30"></div>
+        <div class="field time"><label for="f-end">End</label><input type="time" id="f-end" value="15:00"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="f-outside">Time outside</label><input id="f-outside" placeholder="e.g. 2 hrs at the park"></div>
+        <div class="field"><label for="f-meals">Meals and snacks</label><input id="f-meals" placeholder="e.g. lunch: pasta, apple slices"></div>
+      </div>
+      <div class="field wide"><label for="f-notes">Notes for the family</label><textarea id="f-notes" placeholder="Naps, moods, anything parents should know. Toys put away?"></textarea></div>
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <span class="toast" id="form-toast" role="status"></span>
+        <button type="submit" id="save-day">Save day</button>
+      </div>
+    </form>
+  </section>
+
+  <section aria-labelledby="week-h">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <h2 id="week-h">Week of <span id="week-label"></span></h2>
+      <div class="weeknav">
+        <button class="ghost" type="button" id="prev-week">← Previous</button>
+        <button class="ghost" type="button" id="this-week">This week</button>
+        <button class="ghost" type="button" id="next-week">Next →</button>
+      </div>
+    </div>
+    <div class="card">
+      <div id="week-body"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="agent-h">
+    <h2 id="agent-h">Ask the agent</h2>
+    <div class="card">
+      <p class="muted" id="agent-intro">The agent knows Krystal's terms and this log. Ask about pay, PTO, the schedule, or ideas for the day.</p>
+      <div class="suggest" id="suggest">
+        <button type="button">What do I owe Krystal this week?</button>
+        <button type="button">How many PTO days are left?</button>
+        <button type="button">Outdoor activity ideas for today</button>
+        <button type="button">We're away next Monday. What happens?</button>
+      </div>
+      <div class="chat" id="chat" aria-live="polite"></div>
+      <form class="chatform" id="chat-form">
+        <label for="chat-input" hidden>Message</label>
+        <textarea id="chat-input" placeholder="Ask a question…" rows="1"></textarea>
+        <button type="submit" id="chat-send">Send</button>
+      </form>
+    </div>
+  </section>
+
+  <section aria-labelledby="terms-h">
+    <h2 id="terms-h">The agreement</h2>
+    <div class="terms">
+      <div class="card">
+        <h3>The job</h3>
+        <ul>
+          <li>Care for both kids: entertain them, spend a lot of time outside, feed them, put away their toys.</li>
+          <li>Long-term position.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Schedule</h3>
+        <ul>
+          <li>9:30am – 3:00pm (5.5 hrs), Monday – Thursday.</li>
+          <li>22 hours a week.</li>
+          <li>If the family is out of town on a Monday, Friday replaces it, with at least 2 weeks' notice.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Pay</h3>
+        <ul>
+          <li>$25/hour, paid weekly.</li>
+          <li>W-2 direct deposit or cash.</li>
+          <li>A full week is $550.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Time off</h3>
+        <ul>
+          <li>8 paid days off (PTO) per year for vacation, appointments, or sick time. A PTO day pays $137.50.</li>
+          <li>50% guaranteed pay when the family is away or doesn't need care, without using PTO. That's $68.75 per scheduled day.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const RATE = 25, DAY_HOURS = 5.5, PTO_PER_YEAR = 8, START = "2026-11-02";
+const TYPE_LABEL = { worked: "Worked", pto: "PTO", away: "Family away (50%)", off: "Unpaid" };
+const state = { days: {}, kids: ["", ""], weekOffset: 0 };
+let db = null, sample = null;
+const chatHistory = [];
+const $ = (id) => document.getElementById(id);
+const money = (n) => "$" + (Math.round(n * 100) / 100).toLocaleString("en-US", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+
+function iso(d) { const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), dd = String(d.getDate()).padStart(2, "0"); return `${y}-${m}-${dd}`; }
+function parseISO(s) { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); }
+function mondayOf(d) { const x = new Date(d); const wd = (x.getDay() + 6) % 7; x.setDate(x.getDate() - wd); x.setHours(0,0,0,0); return x; }
+function hoursBetween(a, b) { if (!a || !b) return 0; const [ah, am] = a.split(":").map(Number), [bh, bm] = b.split(":").map(Number); return Math.max(0, (bh * 60 + bm - ah * 60 - am) / 60); }
+function fmtTime(t) { if (!t) return ""; let [h, m] = t.split(":").map(Number); const ap = h >= 12 ? "pm" : "am"; h = h % 12 || 12; return `${h}:${String(m).padStart(2,"0")}${ap}`; }
+function fmtDay(s) { return parseISO(s).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }); }
+
+function dayPay(e) {
+  if (e.type === "worked") { const h = hoursBetween(e.start, e.end); return { hours: h, pay: h * RATE }; }
+  if (e.type === "pto") return { hours: 0, pay: DAY_HOURS * RATE };
+  if (e.type === "away") return { hours: 0, pay: DAY_HOURS * RATE * 0.5 };
+  return { hours: 0, pay: 0 };
+}
+function ptoYearBounds(today) {
+  const s = parseISO(START); let y0 = new Date(s);
+  while (true) { const n = new Date(y0); n.setFullYear(n.getFullYear() + 1); if (n > today) return [y0, n]; y0 = n; }
+}
+function ptoUsed() {
+  const [a, b] = ptoYearBounds(new Date());
+  return Object.values(state.days).filter(e => e.type === "pto" && parseISO(e.date) >= a && parseISO(e.date) < b).length;
+}
+function weekEntries(offset) {
+  const mon = mondayOf(new Date()); mon.setDate(mon.getDate() + offset * 7);
+  const sun = new Date(mon); sun.setDate(sun.getDate() + 6);
+  const list = Object.values(state.days).filter(e => { const d = parseISO(e.date); return d >= mon && d <= sun; }).sort((x, y) => x.date.localeCompare(y.date));
+  return { mon, sun, list };
+}
+function kidsLabel() { const k = state.kids.filter(Boolean); return k.length ? k.join(" & ") : "Both kids"; }
+
+function render() {
+  const cur = weekEntries(0);
+  let hrs = 0, pay = 0; cur.list.forEach(e => { const p = dayPay(e); hrs += p.hours; pay += p.pay; });
+  $("t-hours").textContent = Math.round(hrs * 100) / 100;
+  $("t-pay").textContent = money(pay);
+  const used = ptoUsed();
+  $("t-pto").textContent = Math.max(0, PTO_PER_YEAR - used);
+  $("t-pto-sub").textContent = `of 8 days this year (${used} used)`;
+  $("t-kids").textContent = kidsLabel();
+
+  const w = weekEntries(state.weekOffset);
+  $("week-label").textContent = w.mon.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const body = $("week-body"); body.textContent = "";
+  if (!w.list.length) {
+    const e = document.createElement("div"); e.className = "empty";
+    e.textContent = db ? "No days logged for this week yet. Use the form above to add the first one." : "Days you log will show here with hours and pay.";
+    body.append(e); return;
+  }
+  const wrap = document.createElement("div"); wrap.className = "table-wrap";
+  const t = document.createElement("table");
+  t.innerHTML = `<thead><tr><th>Day</th><th>Type</th><th>Hours</th><th>Details</th><th class="money">Pay</th><th></th></tr></thead>`;
+  const tb = document.createElement("tbody"); let tot = 0, th = 0;
+  w.list.forEach(e => {
+    const p = dayPay(e); tot += p.pay; th += p.hours;
+    const tr = document.createElement("tr");
+    const c = (txt) => { const td = document.createElement("td"); td.textContent = txt; return td; };
+    tr.append(c(fmtDay(e.date)));
+    const typeTd = document.createElement("td"); const chip = document.createElement("span"); chip.className = "chip " + e.type; chip.textContent = TYPE_LABEL[e.type] || e.type; typeTd.append(chip); tr.append(typeTd);
+    tr.append(c(e.type === "worked" ? `${p.hours} (${fmtTime(e.start)}–${fmtTime(e.end)})` : "—"));
+    const det = document.createElement("td");
+    [["Outside", e.outside], ["Meals", e.meals], ["Notes", e.notes]].forEach(([k, v]) => { if (v) { const d = document.createElement("div"); d.className = "note"; d.textContent = `${k}: ${v}`; det.append(d); } });
+    tr.append(det);
+    const m = c(money(p.pay)); m.className = "money"; tr.append(m);
+    const act = document.createElement("td"); const ed = document.createElement("button"); ed.className = "ghost"; ed.type = "button"; ed.textContent = "Edit"; ed.onclick = () => loadIntoForm(e); act.append(ed); tr.append(act);
+    tb.append(tr);
+  });
+  t.append(tb);
+  const tf = document.createElement("tfoot"); tf.innerHTML = `<tr><td>Total</td><td></td><td>${Math.round(th*100)/100}</td><td></td><td class="money">${money(tot)}</td><td></td></tr>`;
+  t.append(tf); wrap.append(t); body.append(wrap);
+}
+
+function loadIntoForm(e) {
+  $("f-date").value = e.date; $("f-type").value = e.type; $("f-start").value = e.start || "09:30"; $("f-end").value = e.end || "15:00";
+  $("f-outside").value = e.outside || ""; $("f-meals").value = e.meals || ""; $("f-notes").value = e.notes || "";
+  syncTimes(); $("day-form").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function syncTimes() { const w = $("f-type").value === "worked"; document.querySelectorAll(".field.time").forEach(f => f.hidden = !w); }
+$("f-type").addEventListener("change", syncTimes);
+$("f-date").value = iso(new Date());
+
+function toast(msg, err) { const t = $("form-toast"); t.textContent = msg; t.className = "toast" + (err ? " err" : ""); }
+
+$("day-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  if (!db) { toast("The shared log isn't connected. Open this page signed in to claude.ai.", true); return; }
+  const e = { date: $("f-date").value, type: $("f-type").value, start: $("f-start").value, end: $("f-end").value,
+    outside: $("f-outside").value.trim(), meals: $("f-meals").value.trim(), notes: $("f-notes").value.trim(), updatedAt: Date.now() };
+  if (!e.date) { toast("Pick a date first.", true); return; }
+  if (e.type !== "worked") { e.start = ""; e.end = ""; }
+  else if (hoursBetween(e.start, e.end) <= 0) { toast("End time needs to be after start time.", true); return; }
+  if (e.type === "pto" && !state.days[e.date]?.type?.includes("pto") && ptoUsed() >= PTO_PER_YEAR) { toast("All 8 PTO days are used for this year.", true); return; }
+  $("save-day").disabled = true;
+  try { await db.collection("days").doc(e.date).set(e); toast(`Saved ${fmtDay(e.date)}.`); $("f-outside").value = $("f-meals").value = $("f-notes").value = ""; }
+  catch (err) { toast(err?.code === "permission_denied" ? "You have view-only access, so you can't save days." : "Couldn't save. Try again in a moment.", true); }
+  finally { $("save-day").disabled = false; }
+});
+
+$("prev-week").onclick = () => { state.weekOffset--; render(); };
+$("next-week").onclick = () => { state.weekOffset++; render(); };
+$("this-week").onclick = () => { state.weekOffset = 0; render(); };
+$("edit-kids").onclick = () => { const c = $("kids-card"); c.hidden = !c.hidden; $("kid1").value = state.kids[0] || ""; $("kid2").value = state.kids[1] || ""; };
+$("save-kids").onclick = async () => {
+  if (!db) return;
+  try { await db.doc("family/settings").set({ kids: [$("kid1").value.trim(), $("kid2").value.trim()] }); $("kids-card").hidden = true; } catch {}
+};
+
+// ---------- Agent ----------
+function buildContext() {
+  const today = new Date();
+  const recent = Object.values(state.days).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 40)
+    .map(e => { const p = dayPay(e); return `- ${e.date} (${fmtDay(e.date)}): ${TYPE_LABEL[e.type]}${e.type === "worked" ? `, ${fmtTime(e.start)}-${fmtTime(e.end)} = ${p.hours} hrs` : ""}, pay ${money(p.pay)}${e.outside ? `; outside: ${e.outside}` : ""}${e.meals ? `; meals: ${e.meals}` : ""}${e.notes ? `; notes: ${e.notes}` : ""}`; }).join("\n") || "(nothing logged yet)";
+  const cur = weekEntries(0); let pay = 0, hrs = 0; cur.list.forEach(e => { const p = dayPay(e); pay += p.pay; hrs += p.hours; });
+  return `You are the assistant for a family and their babysitter, Krystal. Either the parents or Krystal may be asking. Be warm, brief, and practical. Use plain text, no markdown headings.
+
+Today is ${today.toDateString()}. Krystal started on Monday, November 2, 2026.
+Kids: ${state.kids.filter(Boolean).join(" and ") || "two kids (names not set)"}.
+
+THE AGREEMENT (long-term position):
+- Duties: entertain both kids, spend a lot of time outside, feed them, put away their toys.
+- Schedule: 9:30am to 3:00pm (5.5 hrs/day), Monday to Thursday, 22 hrs/week. If the family is out of town on a Monday, Friday replaces it, with at least 2 weeks' advance notice.
+- Pay: $25/hour, paid weekly, by W-2 direct deposit or cash. Full week = $550. Full day = $137.50.
+- PTO: 8 paid days off per year (vacation, appointments, or sick time). PTO year runs from the start date. A PTO day pays a full day ($137.50).
+- Guaranteed pay: 50% pay ($68.75 per scheduled day) when the family is out of town or doesn't need care, without touching PTO.
+Don't invent terms that aren't listed. If something isn't covered (e.g. holidays, overtime, late pickup), say it isn't in the agreement and suggest the family and Krystal agree on it.
+
+THIS WEEK (Mon ${iso(cur.mon)} to Sun ${iso(cur.sun)}): ${hrs} hrs worked, ${money(pay)} owed so far.
+PTO used this year: ${ptoUsed()} of 8.
+
+LOG (most recent first):
+${recent}`;
+}
+
+function addMsg(role, text) { const d = document.createElement("div"); d.className = "msg " + role; d.textContent = text; $("chat").append(d); $("chat").scrollTop = $("chat").scrollHeight; return d; }
+
+async function ask(q) {
+  q = q.trim(); if (!q) return;
+  if (!sample) { addMsg("agent", "The agent isn't available in this view. Open the page in claude.ai while signed in."); return; }
+  addMsg("user", q); $("chat-input").value = "";
+  const bubble = addMsg("agent", "Thinking…");
+  $("chat-send").disabled = true;
+  const turns = chatHistory.slice(-10);
+  const input = [{ role: "user", content: buildContext() + "\n\nFirst question:\n" + (turns[0]?.content ?? q) }];
+  if (turns.length) { turns.slice(1).forEach(t => input.push(t)); input.push({ role: "user", content: q }); }
+  try {
+    const { text } = await sample(input, { cache: false, onText: ({ text }) => { bubble.textContent = text; $("chat").scrollTop = $("chat").scrollHeight; } });
+    bubble.textContent = text;
+    chatHistory.push({ role: "user", content: q }, { role: "assistant", content: text });
+  } catch (err) {
+    if (err?.code === "not_granted") { bubble.textContent = "The agent needs your OK to use Claude. Reload the page and choose Allow when asked."; }
+    else if (err?.code === "rate_limited") { bubble.textContent = "Too many questions at once. Wait a minute and try again."; }
+    else { bubble.textContent = err?.text || "Something went wrong reaching Claude. Try again."; }
+  } finally { $("chat-send").disabled = false; }
+}
+$("chat-form").addEventListener("submit", (e) => { e.preventDefault(); ask($("chat-input").value); });
+$("chat-input").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask($("chat-input").value); } });
+$("suggest").addEventListener("click", (e) => { if (e.target.tagName === "BUTTON") ask(e.target.textContent); });
+
+// ---------- Boot ----------
+syncTimes(); render();
+(async () => {
+  if (!window.claude?.use) { $("status").textContent = "Open this page on claude.ai to use the shared log and the agent."; return; }
+  claude.use("sample").then(s => { sample = s; if (!s) $("agent-intro").textContent = "The agent isn't available in this view. Open the page on claude.ai while signed in."; });
+  db = await claude.use("db");
+  if (!db) { $("status").textContent = "Sign in to claude.ai to see and add to the shared log."; render(); return; }
+  const timer = setTimeout(() => { $("status").textContent = "The shared log is slow to load. It will appear when it connects."; }, 10000);
+  db.collection("days").onSnapshot((snap) => {
+    clearTimeout(timer);
+    state.days = {}; snap.docs.forEach(d => { const v = d.data(); if (v) state.days[d.id] = { ...v, date: v.date || d.id }; });
+    $("status").textContent = "Shared log is live. Changes show up for everyone with this page open.";
+    render();
+  }, () => { clearTimeout(timer); $("status").textContent = "Couldn't load the shared log. Reload to try again."; });
+  db.doc("family/settings").onSnapshot((d) => { const v = d.data(); state.kids = Array.isArray(v?.kids) ? v.kids : ["", ""]; render(); }, () => {});
+})();
+</script>
